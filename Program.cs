@@ -24,7 +24,7 @@ app.MapGet(
     {
         if (categories.Count == 0)
         {
-            return Results.NotFound("list is empty");
+            return Results.NotFound("List is empty");
         }
         return Results.Ok(categories);
     }
@@ -37,19 +37,19 @@ app.MapPost(
     {
         category.Id = Guid.NewGuid();
         categories.Add(category);
-        return Results.Created("Category has added successfully", category);
+        return Results.Created("Category has been added successfully", category);
     }
 );
 
 //update category
-app.MapPut(
+app.MapPatch(
     "/api/v1/categories/{id}",
     (Category category, Guid id) =>
     {
         Category foundCategory = categories.FirstOrDefault(c => c.Id == id);
         if (foundCategory == null)
         {
-            return Results.NotFound("Category not found in the list");
+            return Results.NotFound("Category not found");
         }
         foundCategory.Name = category.Name;
         return Results.Ok(category);
@@ -64,7 +64,7 @@ app.MapDelete(
         Category foundCategory = categories.FirstOrDefault(c => c.Id == id);
         if (foundCategory == null)
         {
-            return Results.NotFound("Category not found in the list");
+            return Results.NotFound("Category not found");
         }
         categories.Remove(foundCategory);
         return Results.NoContent();
