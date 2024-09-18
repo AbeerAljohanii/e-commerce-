@@ -7,7 +7,7 @@ namespace e_commerce_
 {
     public class Category
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; }
         public string Name { get; set; }
 
         public Category(string name)

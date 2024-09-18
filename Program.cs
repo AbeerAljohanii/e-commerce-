@@ -35,8 +35,7 @@ app.MapPost(
     "/api/v1/categories",
     (Category category) =>
     {
-        category.Id = Guid.NewGuid();
-        categories.Add(category);
+        categories.Add(new Category(category.Name));
         return Results.Created("Category has been added successfully", category);
     }
 );
