@@ -1,44 +1,73 @@
-var builder = WebApplication.CreateBuilder(args);
+using e_commerce_;
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
+//category Apis
+List<Category> categories = new List<Category>()
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    new Category("Painting"),
+    new Category("Sculpture"),
 };
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+//get categories
+app.MapGet(
+    "/api/v1/categories",
+    () =>
+    {
+        if (categories.Count == 0)
+        {
+            return Results.NotFound("List is empty");
+        }
+        return Results.Ok(categories);
+    }
+);
+
+//create category
+app.MapPost(
+    "/api/v1/categories",
+    (Category category) =>
+    {
+        categories.Add(new Category(category.Name));
+        return Results.Created("Category has been added successfully", category);
+    }
+);
+
+//update category
+app.MapPatch(
+    "/api/v1/categories/{id}",
+    (Category category, Guid id) =>
+    {
+        Category foundCategory = categories.FirstOrDefault(c => c.Id == id);
+        if (foundCategory == null)
+        {
+            return Results.NotFound("Category not found");
+        }
+        foundCategory.Name = category.Name;
+        return Results.Ok(category);
+    }
+);
+
+//delete category
+app.MapDelete(
+    "/api/v1/categories/{id}",
+    (Guid id) =>
+    {
+        Category foundCategory = categories.FirstOrDefault(c => c.Id == id);
+        if (foundCategory == null)
+        {
+            return Results.NotFound("Category not found");
+        }
+        categories.Remove(foundCategory);
+        return Results.NoContent();
+    }
+);
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
