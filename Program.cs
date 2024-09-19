@@ -10,6 +10,35 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+List<Customer> customers = new List<Customer>
+{
+    new Customer
+    {
+        Id = 1,
+        Name = "Manar",
+        PhoneNumber = "0505050505",
+        Email = "manar@gmail.com",
+        Password = "mama",
+    },
+    new Customer
+    {
+        Id = 2,
+        Name = "Abeer",
+        PhoneNumber = "0505050555",
+        Email = "abeer@gmail.com",
+        Password = "abab",
+    },
+};
+
+// Define the GET endpoint to return the list of customers
+app.MapGet(
+    "/api/v1/customers",
+    () =>
+    {
+        return Results.Ok(customers);
+    }
+);
+
 //category Apis
 List<Category> categories = new List<Category>()
 {
